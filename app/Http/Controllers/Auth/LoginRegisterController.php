@@ -30,9 +30,17 @@ class LoginRegisterController extends Controller
         ]);
 
         if($validate->fails()){
-            // If validation fails, redirect back to the registration form with errors
-            return redirect()->route('register.form')->withErrors($validate)->withInput();
+            return response()->json([
+                'status' => 'failed',
+                'message' => 'Validation Error!',
+                'data' => $validate->errors(),
+            ], 403);
         }
+
+        // if($validate->fails()){
+        //     // If validation fails, redirect back to the registration form with errors
+        //     return redirect()->route('register.form')->withErrors($validate)->withInput();
+        // }
 
         $user = User::create([
             'name' => $request->name,
@@ -43,8 +51,16 @@ class LoginRegisterController extends Controller
         $data['token'] = $user->createToken($request->email)->accessToken;
         $data['user'] = $user;
 
-        // If registration is successful, redirect to a different URL (e.g., dashboard)
-        return redirect('/2fa')->with('success', 'User is created successfully.');
+        $response = [
+            'status' => 'success',
+            'message' => 'User is created successfully.',
+            'data' => $data,
+        ];
+
+        return response()->json($response, 201);
+
+        // // If registration is successful, redirect to a different URL (e.g., dashboard)
+        // return redirect('/2fa')->with('success', 'User is created successfully.');
     }
 
 
@@ -74,9 +90,9 @@ class LoginRegisterController extends Controller
              $user = Auth::user();
      
              // Check if 2FA is enabled for the user
-             if ($user->two_factor_secret) {
+             if ($user->google2fa_secret) {
                  // Generate OTP token
-                 $otp = TOTP::create($user->two_factor_secret);
+                 $otp = TOTP::create($user->google2fa_secret);
      
                  // Generate OTP code
                  $otpCode = $otp->now();
@@ -85,7 +101,7 @@ class LoginRegisterController extends Controller
                  $request->session()->put('otp_code', $otpCode);
      
                  // If 2FA is enabled, redirect to the 2FA verification page
-                 return redirect('/2fa')->with('success', 'User is logged in successfully.');
+                 return redirect('/verify-2fa')->with('success', 'User is logged in successfully.');
              }
      
              // If 2FA is not enabled, proceed with the regular login flow

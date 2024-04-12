@@ -13,7 +13,7 @@
     <div class="container-fluid">
         <a class="navbar-brand" href="#">Dashboard</a>
         <li class="nav-item">
-                    <span class="navbar-text">Welcome, {{ $userName }}</span>
+                    <span class="navbar-text">Welcome</span>
                 </li>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -21,6 +21,8 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto"> <!-- Align the links to the right -->
                 <!-- Add more navigation links as needed -->
+                <a href="{{ route('enable-2fa-form') }}" class="btn btn-primary">Enable Two-Factor Authentication</a>
+
                 
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Logout</a>
@@ -36,26 +38,25 @@
     <!-- Padding and Table -->
     <div class="container mt-5">
         <h1>PRODUCTS</h1>
-        <table class="table mt-5">
-            <thead>
-                <tr>
-                    <th scope="col">ID</th>
-                    <th scope="col">Name</th>
-                    <th scope="col">Description</th>
-                    <th scope="col">Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                @if (count($products) > 0)
-                    @foreach ($products as $cont)
+            <table class="table mt-5">
+                <thead>
+                    <tr>
+                        <th scope="col">ID</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Description</th>
+                        <th scope="col">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($products as $product)
                         <tr>
-                            <th>{{ $cont->id }}</th>
-                            <th>{{ $cont->name }}</th>
-                            <th>{{ $cont->description }}</th>
-                            <th>
-                                <a href="/edit/{{ $cont->id }}" class="btn btn-primary">Edit</a>
-                                <a href="/delete/{{ $cont->id }}" class="btn btn-danger">Delete</a>
-                            </th>
+                            <td>{{ $product->id }}</td>
+                            <td>{{ $product->name }}</td>
+                            <td>{{ $product->description }}</td>
+                            <td>
+                                <a href="/edit/{{ $product->id }}" class="btn btn-primary">Edit</a>
+                                <a href="/delete/{{ $product->id }}" class="btn btn-danger">Delete</a>
+                            </td>
                         </tr>
                     @endforeach
                     @if ($errors->any())
@@ -67,11 +68,6 @@
                             </ul>
                         </div>
                     @endif
-                @else
-                    <tr>
-                        <th colspan="4">No Data</th>
-                    </tr>
-                @endif
             </tbody>
         </table>
     </div>

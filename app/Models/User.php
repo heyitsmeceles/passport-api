@@ -8,6 +8,8 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Passport\HasApiTokens;
+use Illuminate\Support\Facades\Hash;
+use PragmaRX\Google2FA\Google2FA;
 
 
 class User extends Authenticatable implements MustVerifyEmail
@@ -48,4 +50,31 @@ class User extends Authenticatable implements MustVerifyEmail
         'email_verified_at' => 'datetime',
         'two_factor_enabled' => 'boolean', // Cast two-factor enabled to boolean
     ];
+
+    public function generate2faSecret()
+    {
+        $google2fa = new Google2FA();
+        $secret = $google2fa->generateSecretKey();
+
+        $this->google2fa_secret = $secret;
+        $this->save();
+
+        return $secret;
+    }
+
+    public function enableTwoFactorAuthentication()
+    {
+        $this->generate2faSecret();
+
+        // Optionally, send the secret to the user (e.g., via email)
+        // $this->sendTwoFactorAuthSecret(); // Implement this method
+
+        return true;
+    }
+
+    public function verifyTwoFactorAuthentication($otp)
+    {
+        $google2fa = new Google2FA();
+        return $google2fa->verifyKey($this->google2fa_secret, $otp);
+    }
 }

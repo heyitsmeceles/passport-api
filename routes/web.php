@@ -18,7 +18,7 @@ use App\Http\Controllers\ProductController;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('index');
 });
 
 // Show login form
@@ -46,3 +46,17 @@ Route::get('/products/{product}/edit', [ProductController::class, 'update'])->na
 Route::post('/products/{id}', [ProductController::class, 'update'])->name('products.update');
 Route::delete('/products/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
 Route::post('/logout', [LoginRegisterController::class, 'logout'])->name('logout');
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/enable-2fa', [TwoFactorController::class, 'showEnableForm'])->name('enable-2fa-form');
+    Route::post('/enable-2fa', [TwoFactorController::class, 'enable'])->name('enable-2fa');
+    Route::get('/verify-2fa', [TwoFactorController::class, 'showVerifyForm'])->name('verify-2fa-form');
+    Route::post('/verify-2fa', [TwoFactorController::class, 'verify'])->name('verify-2fa');
+});
+
+Route::get('/generate-otp', [TwoFactorController::class, 'generateOTP'])->name('generate-otp');
+
+
+
+use App\Http\Controllers\TwoFactorAuthController;
+

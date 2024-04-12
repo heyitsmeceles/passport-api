@@ -16,12 +16,17 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $products = Product::latest()->get();
-        $userName = Auth::user()->name; 
-        $email = Auth::user()->email; // Retrieve the authenticated user's email
-    
-    return view('index', compact('products', 'userName', 'email'));
+        if (Auth::check()) {
+            $products = Product::all();
+            $userName = Auth::user()->name;
+            $email = Auth::user()->email;
+        
+            return view('index', compact('products', 'userName', 'email'));
+        } else {
+            return redirect()->route('login');
+        }
     }
+
     /**
      * Display the products view with borders.
      *
